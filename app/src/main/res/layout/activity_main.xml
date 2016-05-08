@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.example.wang.userinfoapp.MainActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="接入用户数："
+        android:id="@+id/staticUserCounter" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:id="@+id/textUserCounter"
+        android:layout_alignTop="@+id/staticUserCounter"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="服务器IP地址："
+        android:id="@+id/staticServerIP"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="服务器端口："
+        android:id="@+id/staticServerPort"
+        android:layout_marginTop="42dp"
+        android:layout_below="@+id/editServerIP"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/editServerIP"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/staticServerIP"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:text="127.0.0.1"
+        android:layout_alignBaseline="@+id/staticServerIP"
+        android:editable="true"
+        android:inputType="text" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal"
+        android:ems="10"
+        android:id="@+id/editServerPort"
+        android:layout_alignLeft="@+id/editServerIP"
+        android:layout_alignStart="@+id/editServerIP"
+        android:layout_alignRight="@+id/editServerIP"
+        android:layout_alignEnd="@+id/editServerIP"
+        android:layout_above="@+id/staticServerPort"
+        android:layout_alignBottom="@+id/staticServerPort"
+        android:text="4567"
+        android:layout_alignBaseline="@+id/staticServerPort"
+        android:layout_alignParentBottom="false"
+        android:maxLength="5" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Connect"
+        android:id="@+id/buttonConnect"
+        android:layout_below="@+id/editServerPort"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="28dp"
+        android:onClick="ClickConnect" />
+
+</RelativeLayout>
