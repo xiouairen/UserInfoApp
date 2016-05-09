@@ -1,12 +1,82 @@
 package com.example.wang.userinfoapp;
 
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.Socket;
+
 
 public class MainActivity extends AppCompatActivity {
     private boolean m_bConnect = false;
+    Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case 0://更新用户数
+                    String strUserCount = msg.getData().getString("UserCount");
+                    TextView tvUserCounter = (TextView) findViewById(R.id.textUserCounter);
+                    tvUserCounter.setText(strUserCount);
+                    break;
+                case 1://更新连接状态
+                    Button btn = (Button) findViewById(R.id.buttonConnect);
+                    if (m_bConnect) {
+                        btn.setText("Disconnect");
+                    } else {
+                        btn.setText("Connect");
+                    }
+                    break;
+            }
+            super.handleMessage(msg);
+        }
+    };
+
+    class SocketThread extends Thread {
+        private String m_strIP;
+        private int m_nPort;
+
+        public SocketThread(String strIP, int nPort) {
+            m_strIP = strIP;
+            m_nPort = nPort;
+        }
+
+        @Override
+        public void run() {
+            //创建一个Socket对象，指定服务器端的IP地址和端口号
+            try {
+                Socket socket = new Socket(m_strIP, m_nPort);
+                BufferedReader readBuffer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                //读取发来服务器信息
+                String line;
+                String buffer = "";
+                while (m_bConnect) {
+                    if ((line = readBuffer.readLine()) != null) {
+                        Bundle infoBundle = new Bundle();
+                        infoBundle.putString("UserCount", line);
+                        Message msgInfo = new Message();
+                        msgInfo.what = 0;
+                        msgInfo.setData(infoBundle);
+                        mHandler.sendMessage(msgInfo);
+                    }
+                }
+                socket.close();
+            } catch (IOException e) {
+                m_bConnect = false;
+                Message msgInfo = new Message();
+                msgInfo.what = 1;
+                mHandler.sendMessage(msgInfo);
+                e.printStackTrace();
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,81 +89,15 @@ public class MainActivity extends AppCompatActivity {
         m_bConnect = !m_bConnect;
         if (m_bConnect) {
             btn.setText("Disconnect");
-//            //创建一个Socket对象，指定服务器端的IP地址和端口号
-//            String strIP =
-//            Socket socket = new Socket("192.168.1.104", 4567);
-//
-//            //使用InputStream读取硬盘上的文件
-//
-//            InputStream inputStream = new
-//
-//                    FileInputStream("f://file/words.txt");
-//
-//            //从Socket当中得到OutputStream
-//
-//            OutputStream outputStream = socket.getOutputStream();
-//
-//            byte buffer[] = new byte[4 * 1024];
-//
-//            int temp = 0;
-//
-//            //将InputStream当中的数据取出，并写入到OutputStream当中
-//
-//            while ((temp = inputStream.read(buffer)) != -1) {
-//
-//                outputStream.write(buffer, 0, temp);
-//
-//            }
-//
-//            outputStream.flush();
-//
-//        }
+            EditText etServerIP = (EditText) findViewById(R.id.editServerIP);
+            String strServerIP = etServerIP.getText().toString();
+            EditText etServerPort = (EditText) findViewById(R.id.editServerPort);
+            String strServerPort = etServerPort.getText().toString();
+            int nServerPort = Integer.parseInt(strServerPort);
+            SocketThread st = new SocketThread(strServerIP, nServerPort);
+            st.start();
+        } else {
+            btn.setText("Connect");
+        }
     }
-    else {
-        btn.setText("Connect");
-//        //声明一个ServerSocket对象
-//
-//        ServerSocket serverSocket = null;
-//
-//        try {
-//
-//            //创建一个ServerSocket对象，并让这个Socket在4567端口监听
-//
-//            serverSocket = new ServerSocket(4567);
-//
-//            //调用ServerSocket的accept()方法，接受客户端所发送的请求，
-//
-//            //如果客户端没有发送数据，那么该线程就停滞不继续
-//
-//            Socket socket = serverSocket.accept();
-//
-//            //从Socket当中得到InputStream对象
-//
-//            InputStream inputStream = socket.getInputStream();
-//
-//            byte buffer [] = new byte[1024*4];
-//
-//            int temp = 0;
-//
-//            //从InputStream当中读取客户端所发送的数据
-//
-//            while((temp = inputStream.read(buffer)) != -1){
-//
-//                System.out.println(new String(buffer,0,temp));
-//
-//            }
-//
-//        } catch (IOException e) {
-//
-//            // TODO Auto-generated catch block
-//
-//            e.printStackTrace();
-//
-//        }
-//
-//        serverSocket.close();
-//
-//    }
-}
-}
 }
